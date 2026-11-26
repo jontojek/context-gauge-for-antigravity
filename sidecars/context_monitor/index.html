@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Context Gauge</title>
+  <script src="/preload.js"></script>
+  <link rel="stylesheet" href="/styles.css?v=2.1">
+</head>
+<body>
+  <div class="shell">
+    <!-- Sticky Top Header -->
+    <header class="header">
+      <div class="header-top">
+        <div class="title-group">
+          <span class="title-icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 14l4-4"/>
+              <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+            </svg>
+          </span>
+          <h1 class="title">Context Gauge</h1>
+          <span class="ver-badge" title="Plugin version">v2.1</span>
+          <span id="live-pill" class="live-pill has-tip" tabindex="0"
+            data-tip-title="Live Connection"
+            data-tip-body="Checks your open chat every 1.5 seconds in read-only mode (it never edits your chat). Shows 'Pinned' if you pick another chat from the list below.">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span class="live-eq" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="live-label">Live</span>
+          </span>
+        </div>
+        <div class="header-actions">
+          <button id="btn-tips" type="button" class="tips-toggle-btn on" aria-pressed="true"
+            title="Turn hover explanation popups on or off">
+            <span class="tips-dot" aria-hidden="true"></span>
+            <span id="tips-label">Tips: On</span>
+          </button>
+          <button id="btn-guide" type="button" class="icon-btn has-tip" aria-expanded="true" aria-controls="guide-card"
+            data-tip-title="Show / Hide Guide"
+            data-tip-body="Shows or hides the quick guide card at the top of this panel.">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+              <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          </button>
+          <button id="btn-refresh" type="button" class="refresh-btn has-tip"
+            data-tip-title="Refresh Panel Now"
+            data-tip-body="Checks the latest numbers right away and flashes green when done. Hold Shift while clicking for a full reload.">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+            </svg>
+            <span id="refresh-label">Refresh</span>
+          </button>
+          <button id="btn-settings" type="button" class="icon-btn has-tip" aria-expanded="false" aria-controls="settings-drawer"
+            data-tip-title="Alert Levels"
+            data-tip-body="Choose when the gauge turns amber (Getting full) and red (Almost full).">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.85 1 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Connected Chat Identity Card -->
+      <div id="chat-link-card" class="chat-link-card">
+        <div class="chat-link-top">
+          <span id="chat-link-badge" class="chat-link-badge has-tip" tabindex="0"
+            data-tip-title="Connected to Your Open Chat"
+            data-tip-body="This panel automatically follows whichever chat you open on the left side of Antigravity.">
+            <span class="chat-color-dot" aria-hidden="true"></span>
+            <span id="chat-link-state">← Linked to open chat</span>
+          </span>
+          <span id="chat-sync-pill" class="chat-sync-pill hidden" aria-live="polite">✓ Synced</span>
+          <span id="chat-id-chip" class="chat-id-chip has-tip" tabindex="0"
+            data-tip-title="Chat Fingerprint"
+            data-tip-body="Short ID and color unique to this chat — changes right away when you switch chats on the left.">Chat —</span>
+        </div>
+        <div id="chat-link-title" class="chat-link-title">Following open chat…</div>
+        <div id="chat-link-prompt" class="chat-link-prompt hidden"></div>
+        <div class="session-row">
+          <select id="session-select" class="session-select has-tip" aria-label="Chat switcher"
+            data-tip-title="Inspect Another Chat"
+            data-tip-body="Follows your open chat automatically. Pick another recent chat here if you want to peek at its memory.">
+            <option value="">Following open chat…</option>
+          </select>
+          <button id="btn-follow" type="button" class="follow-btn hidden">← Back to Open Chat</button>
+        </div>
+      </div>
+
+      <!-- Collapsible Settings Drawer -->
+      <div id="settings-drawer" class="settings-drawer hidden">
+        <label class="setting-item has-tip"
+          data-tip-title="Getting Full (%)"
+          data-tip-body="When memory reaches this percent, the gauge turns amber as a heads-up.">
+          <span>Warn %</span>
+          <input id="input-warn" type="number" min="20" max="90" step="5" value="60">
+        </label>
+        <label class="setting-item has-tip"
+          data-tip-title="Almost Full (%)"
+          data-tip-body="When memory reaches this percent, the gauge turns red and suggests typing /compact or starting a new chat.">
+          <span>Critical %</span>
+          <input id="input-crit" type="number" min="30" max="98" step="5" value="80">
+        </label>
+        <button id="btn-reset-settings" type="button" class="ghost-btn">Reset</button>
+      </div>
+    </header>
+
+    <!-- Big Plain-English Explainer Card (Visible by default!) -->
+    <section id="guide-card" class="guide-card-wrap">
+      <div class="guide-card">
+        <div class="guide-card-head">
+          <div class="guide-card-title-row">
+            <span class="guide-pill">Guide</span>
+            <h2 class="guide-card-title">Quick Guide: How the AI's Short-Term Memory Works</h2>
+          </div>
+          <button id="btn-hide-guide" type="button" class="ghost-btn">Hide</button>
+        </div>
+        <p class="guide-intro">
+          Think of each chat as having a <strong>desk</strong> with limited room. Everything in this chat — <strong>your prompts</strong>, files the AI opens, tool outputs, and replies — stays on the desk. When the desk fills up, Antigravity summarizes older details to free space.
+        </p>
+        <div class="guide-split">
+          <div class="guide-mini-box">
+            <strong>Prompts vs. AI steps</strong>
+            <span><strong>Prompts</strong> are messages <em>you</em> type. <strong>AI steps</strong> are behind-the-scenes actions <em>the agent</em> takes to answer you (reading files, running tools, replying). One prompt often takes 5–15 AI steps!</span>
+          </div>
+          <div class="guide-mini-box">
+            <strong>What 1K means</strong>
+            <span><strong>1K</strong> of space is roughly <strong>750 words</strong> (about a page and a half). You never need to do math — just follow the green, amber, or red color.</span>
+          </div>
+        </div>
+        <div class="traffic-grid">
+          <div class="traffic-item healthy">
+            <span class="traffic-dot"></span>
+            <div><strong>0–59% Plenty of room</strong> — Do nothing. You're all good.</div>
+          </div>
+          <div class="traffic-item warn">
+            <span class="traffic-dot"></span>
+            <div><strong>60–79% Getting full</strong> — Good time to finish your current task.</div>
+          </div>
+          <div class="traffic-item crit">
+            <span class="traffic-dot"></span>
+            <div><strong>80%+ Almost full</strong> — Type <code>/compact</code> in chat to summarize older steps and keep going here, or start a new chat for a fresh topic.</div>
+          </div>
+        </div>
+        <details class="guide-details">
+          <summary>Short-term memory vs. saved rules (<code>AGENTS.md</code> &amp; Skills)</summary>
+          <div class="guide-details-body">
+            <p><strong>This meter tracks this chat's temporary desk:</strong> everything said or opened in this chat goes onto the desk automatically on every step, and a brand-new chat starts with a clean desk.</p>
+            <p><strong>Saved across future chats:</strong> Antigravity never writes permanent rules or skills on its own — only when you ask it to or run <code>/learn</code>. Put short always-on rules in <code>AGENTS.md</code> (loaded on every chat under <em>Fixed setup</em>), and put multi-step workflows into <strong>Skills</strong> (only a 1-line title loads until needed, saving desk space).</p>
+          </div>
+        </details>
+        <div class="guide-footer-note">
+          <strong>Controls:</strong> Use <strong>Tips: On/Off</strong> at the top to toggle hover popups, or click <strong>?</strong> anytime to show or hide this guide.
+        </div>
+      </div>
+    </section>
+
+    <!-- Empty / Waiting State -->
+    <main id="empty-state" class="empty-state">
+      <div class="empty-ring" aria-hidden="true"></div>
+      <p id="empty-title" class="empty-title">Waiting for first AI reply…</p>
+      <p class="empty-sub">Send a message in any Antigravity chat and memory numbers will show up here automatically.</p>
+    </main>
+
+    <!-- Main Dashboard -->
+    <main id="dashboard" class="dashboard hidden">
+      <!-- Top One-Line Status Summary -->
+      <section id="status-banner" class="status-banner healthy has-tip" tabindex="0" role="status"
+        data-tip-title="Memory Status"
+        data-tip-body="Quick summary of how much room is left in this chat right now.">
+        <div class="status-line-text">
+          <strong id="status-main">Plenty of room</strong>
+          <span id="status-sub"></span>
+        </div>
+        <button id="btn-copy-compact" type="button" class="compact-btn hidden has-tip"
+          data-tip-title="Copy /compact"
+          data-tip-body="Copies '/compact' so you can paste and send it in chat to summarize older steps and free up space.">Copy <code>/compact</code></button>
+      </section>
+
+      <!-- Hero Gauge Card -->
+      <section class="card hero-card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">Memory used</h2>
+            <p class="card-sub">How full the AI's short-term memory is for this chat</p>
+          </div>
+          <span id="exact-badge" class="exact-badge has-tip" tabindex="0"
+            data-tip-title="Measured by Server"
+            data-tip-body="Exact memory numbers reported by Antigravity's server — not a rough word-count guess.">Measured by server</span>
+        </div>
+
+        <div class="hero-top">
+          <div class="gauge-wrap has-tip" tabindex="0"
+            data-tip-title="Memory Used (%)"
+            data-tip-body="How much of the AI's short-term memory is full right now. Green = plenty of room, Amber = getting full, Red = almost full.">
+            <svg class="ring-svg" viewBox="0 0 140 124" aria-hidden="true">
+              <path id="ring-track" class="ring-track" fill="none" stroke-width="11" stroke-linecap="round"/>
+              <line id="tick-warn" class="ring-tick warn"/>
+              <line id="tick-crit" class="ring-tick crit"/>
+              <path id="ring-fill" class="ring-fill" fill="none" stroke-width="11" stroke-linecap="round"/>
+              <circle id="ring-tip" class="ring-tip" cx="0" cy="0" r="4.5" visibility="hidden"/>
+            </svg>
+            <div class="gauge-center">
+              <div id="gauge-pct" class="gauge-pct">0%</div>
+              <div id="gauge-status" class="gauge-status">Healthy</div>
+            </div>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="model-row">
+              <span id="model-badge" class="model-badge has-tip" tabindex="0"
+                data-tip-title="Active AI Model"
+                data-tip-body="The AI model that handled the last step. Different models have different memory sizes.">—</span>
+              <span id="ceiling-badge" class="ceiling-badge has-tip" tabindex="0"
+                data-tip-title="Memory Ceiling"
+                data-tip-body="Best guess of this model's memory size. If Antigravity cleans up earlier or later than this, the guess adjusts automatically.">Auto (est. 256K)</span>
+              <span id="working-pill" class="working-pill hidden has-tip" tabindex="0"
+                data-tip-title="AI Active Right Now"
+                data-tip-body="The agent is taking another step on your latest prompt right now.">⚡ AI working…</span>
+            </div>
+            <div class="primary-readout has-tip" tabindex="0"
+              data-tip-title="Memory Used / Ceiling"
+              data-tip-body="Space currently held in the AI's short-term memory compared to this model's ceiling (1K is roughly 750 words).">
+              <span id="val-used" class="val-used">0</span>
+              <span class="val-sep">/</span>
+              <span id="val-limit" class="val-limit">256K</span>
+            </div>
+            <div id="val-remaining" class="sub-readout">256K left</div>
+            <div id="val-projected" class="projected-readout hidden"></div>
+            <div id="val-eta" class="eta-readout hidden has-tip" tabindex="0"
+              data-tip-title="Steps Until Auto-Cleanup"
+              data-tip-body="Rough estimate: space left divided by how fast memory grew over the last few steps."></div>
+          </div>
+        </div>
+
+        <!-- Linear Progress Bar with Threshold Markers -->
+        <div class="bar-block has-tip" tabindex="0"
+          data-tip-title="Memory Fill Bar"
+          data-tip-body="Blue = reused from earlier steps. Purple = new this step. The amber and red vertical marks show Getting full and Almost full.">
+          <div class="bar-track">
+            <div id="bar-cached" class="bar-seg bar-cached"></div>
+            <div id="bar-fresh" class="bar-seg bar-fresh"></div>
+            <div id="bar-warn-mark" class="bar-marker warn"></div>
+            <div id="bar-crit-mark" class="bar-marker crit"></div>
+          </div>
+          <div class="bar-footer">
+            <span id="bar-left-label">0 used</span>
+            <span id="bar-right-label">Getting full 60% · Almost full 80%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4-Tile Quick Stats (Plain-English Labels) -->
+      <section class="stats-grid">
+        <div class="stat-tile has-tip" tabindex="0"
+          data-tip-title="Reused (Cheaper)"
+          data-tip-body="Percent of memory the server reused from earlier steps instead of re-reading from scratch. Faster and cheaper when high.">
+          <div class="stat-label tip-cue">Reused</div>
+          <div id="stat-cache" class="stat-val">—</div>
+          <div id="stat-cache-sub" class="stat-sub">most of memory was reused</div>
+        </div>
+        <div class="stat-tile has-tip" tabindex="0"
+          data-tip-title="Last Step"
+          data-tip-body="How much memory the latest step added (+) or freed (-). A big jump means a large file or command result was read.">
+          <div class="stat-label tip-cue">Last step</div>
+          <div id="stat-delta" class="stat-val">—</div>
+          <div id="stat-delta-sub" class="stat-sub">added this step</div>
+        </div>
+        <div class="stat-tile has-tip" tabindex="0"
+          data-tip-title="Your Prompts vs. AI Steps"
+          data-tip-body="Prompts = messages YOU send. AI steps = actions the AGENT takes to answer you (reading files, running tools, replying). One prompt often triggers 5–15 AI steps.">
+          <div class="stat-label tip-cue">Prompts &amp; AI steps</div>
+          <div id="stat-turns" class="stat-val stat-val-dual">0 prompts · 0 steps</div>
+          <div id="stat-turns-sub" class="stat-sub">you (human) · agent actions</div>
+        </div>
+        <div class="stat-tile has-tip" tabindex="0"
+          data-tip-title="Times Memory Was Summarized"
+          data-tip-body="How many times Antigravity (or /compact) summarized older steps to free space, plus what memory dropped from → to.">
+          <div class="stat-label tip-cue">Times memory was summarized</div>
+          <div id="stat-compactions" class="stat-val">0</div>
+          <div id="stat-compactions-sub" class="stat-sub">none yet</div>
+        </div>
+      </section>
+
+      <!-- Memory Advisor Card -->
+      <section id="advisor-card" class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title tip-cue has-tip" tabindex="0"
+              data-tip-title="What's Using My Memory?"
+              data-tip-body="Shows which apps, files, and setup rules are taking up space right now — based only on what the server actually measures.">What's using my memory?</h2>
+          </div>
+        </div>
+        <div id="advisor-verdict" class="advisor-verdict good has-tip" tabindex="0"
+          data-tip-title="Should You Change Anything?"
+          data-tip-body="Plain-English takeaway based on your current memory mix.">
+          <strong id="advisor-verdict-title">Don't worry about it — you're all good.</strong>
+          <span id="advisor-verdict-body">You don't need to change how you work.</span>
+        </div>
+        <div id="advisor-list" class="advisor-list"></div>
+        <p id="advisor-footnote" class="advisor-footnote">Tool and message sizes are measured by the server. Fixed setup can't be broken down from chat logs. Compare new chats to see what a change saves.</p>
+      </section>
+
+      <!-- Category Breakdown -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title tip-cue has-tip" tabindex="0"
+              data-tip-title="Memory Breakdown"
+              data-tip-body="How total memory splits by category — hover any row for details.">Memory breakdown</h2>
+            <p class="card-sub">How total memory splits by category — hover any row</p>
+          </div>
+        </div>
+        <div id="cat-bar" class="cat-stacked-bar"></div>
+        <div id="cat-list" class="cat-list"></div>
+      </section>
+
+      <!-- Turn Growth Chart -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title tip-cue has-tip" tabindex="0"
+              data-tip-title="Memory Over Time"
+              data-tip-body="Each point is 1 AI work step (reading a file, running a command, or replying). Move your mouse across the chart to inspect any step.">Memory over time</h2>
+            <p id="chart-sub" class="card-sub">Each point is 1 AI work step (1 prompt from you often takes 5–15 steps)</p>
+          </div>
+          <div class="seg-toggle" role="group" aria-label="Chart scope">
+            <button id="scope-window" type="button" class="seg-btn active has-tip" data-scope="window"
+              data-tip-title="Since Last Cleanup"
+              data-tip-body="Shows only the steps since the last summary reset — easiest way to watch your current climb.">Current</button>
+            <button id="scope-all" type="button" class="seg-btn has-tip" data-scope="all"
+              data-tip-title="Full Chat"
+              data-tip-body="Shows every step from the start of the chat, including vertical purple lines where memory was summarized.">Full Chat</button>
+          </div>
+        </div>
+        <div id="chart-wrap" class="chart-wrap">
+          <svg id="growth-svg" class="growth-svg" viewBox="0 0 360 136"></svg>
+          <div id="chart-tooltip" class="chart-tooltip hidden"></div>
+        </div>
+        <div class="chart-legend">
+          <span class="has-tip" data-tip-title="Your Prompt" data-tip-body="Green dot = a step right after you sent a prompt. Blue line = behind-the-scenes AI steps."><i class="leg-dot leg-prompt"></i>Your prompt</span>
+          <span class="has-tip" data-tip-title="AI Steps" data-tip-body="Total short-term memory used on each AI step."><i class="leg-line leg-context"></i>AI steps</span>
+          <span class="has-tip" data-tip-title="Getting Full Line" data-tip-body="Your amber heads-up level (default 60%)."><i class="leg-line leg-warn"></i>Getting full</span>
+          <span class="has-tip" data-tip-title="Almost Full Line" data-tip-body="Your red warning level (default 80%)."><i class="leg-line leg-crit"></i>Almost full</span>
+          <span class="has-tip" data-tip-title="Summarized Marker" data-tip-body="Vertical purple line marking where older steps were summarized to free memory."><i class="leg-line leg-compact"></i>Summarized</span>
+        </div>
+      </section>
+
+      <!-- Heavy Turns (Top Context Drivers) -->
+      <section class="card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title tip-cue has-tip" tabindex="0"
+              data-tip-title="Biggest Single Steps"
+              data-tip-body="Lists the single steps that added the most to memory in this window, plus which prompt from you triggered them. Hover or click a row to highlight that step on the chart.">Biggest single steps</h2>
+            <p class="card-sub">What the AI did, which prompt caused it, and space added</p>
+          </div>
+        </div>
+        <div id="heavy-list" class="heavy-list"></div>
+      </section>
+
+      <!-- Collapsible Advanced Developer Details -->
+      <section class="advanced-section">
+        <button id="btn-advanced" type="button" class="advanced-toggle has-tip" aria-expanded="false" aria-controls="advanced-body"
+          data-tip-title="Advanced Step Breakdown"
+          data-tip-body="Shows extra per-step numbers (Reused vs New this step vs AI reply, and running totals for the whole chat).">
+          <span id="advanced-arrow">▸</span> Advanced
+        </button>
+        <div id="advanced-body" class="advanced-body hidden">
+          <div class="token-chips">
+            <span class="chip has-tip" tabindex="0"
+              data-tip-title="Reused (cheaper)"
+              data-tip-body="Memory the server kept from earlier steps. Faster and cheaper to reuse."><span class="dot dot-cache"></span>Reused (cheaper) <strong id="chip-cached">0</strong></span>
+            <span class="chip has-tip" tabindex="0"
+              data-tip-title="New this step"
+              data-tip-body="New text added on the latest step: your message, files read, tool results."><span class="dot dot-fresh"></span>New this step <strong id="chip-fresh">0</strong></span>
+            <span class="chip has-tip" tabindex="0"
+              data-tip-title="AI's reply"
+              data-tip-body="What the AI wrote on its latest step, including its thinking."><span class="dot dot-out"></span>AI's reply <strong id="chip-out">0</strong></span>
+          </div>
+          <div id="footer-cumulative" class="advanced-cumulative has-tip" tabindex="0"
+            data-tip-title="Running Total Across All Steps"
+            data-tip-body="Combined memory processed across every step in this chat from start to finish.">All steps combined: 0 new · 0 reused · 0 AI replies</div>
+        </div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer-meta">
+        <span>Read-only monitor</span>
+        <span id="footer-updated">v2.1 · —</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Floating Plain-English Hover Popover -->
+  <div id="cm-tip" class="cm-tip" role="tooltip" style="display:none;">
+    <div id="cm-tip-title" class="cm-tip-title"></div>
+    <div id="cm-tip-body" class="cm-tip-body"></div>
+  </div>
+
+  <script src="/app.js?v=2.1"></script>
+</body>
+</html>

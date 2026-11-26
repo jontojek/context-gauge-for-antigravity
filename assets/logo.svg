@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128" fill="none">
+  <rect x="12" y="12" width="104" height="104" rx="24" fill="#181C24" stroke="#334155" stroke-width="3"/>
+  <!-- Track arc (270 deg) -->
+  <path d="M 38.5 89.5 A 36 36 0 1 1 89.5 89.5" stroke="#2D3748" stroke-width="10" stroke-linecap="round"/>
+  <!-- Active telemetry arc -->
+  <path d="M 38.5 89.5 A 36 36 0 1 1 97.6 51.4" stroke="url(#g)" stroke-width="10" stroke-linecap="round"/>
+  <!-- Needle / center hub -->
+  <line x1="64" y1="64" x2="84" y2="48" stroke="#F8FAFC" stroke-width="4.5" stroke-linecap="round"/>
+  <circle cx="64" cy="64" r="7" fill="#38BDF8" stroke="#F8FAFC" stroke-width="2.5"/>
+  <!-- Bottom bar -->
+  <rect x="44" y="92" width="40" height="6" rx="3" fill="#38BDF8" opacity="0.85"/>
+  <defs>
+    <linearGradient id="g" x1="28" y1="90" x2="100" y2="38" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="55%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,16 @@
+{
+  "name": "context-gauge",
+  "displayName": "Context Gauge",
+  "description": "See how full your chat's context window is, what is filling it, and when to run /compact. Read-only, with plain-English explanations.",
+  "version": "2.1.0",
+  "author": { "name": "Jon Tojek" },
+  "homepage": "https://github.com/jontojek/context-gauge-for-antigravity",
+  "license": "MIT",
+  "keywords": ["context window", "tokens", "compact", "monitor", "usage", "beginner-friendly"],
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Open the Context Gauge side panel",
+    "How close is this chat to auto-compaction?",
+    "Which tool calls used the most context in this chat?"
+  ]
+}

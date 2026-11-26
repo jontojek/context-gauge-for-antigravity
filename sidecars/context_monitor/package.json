@@ -1,0 +1,6 @@
+{
+  "name": "context_monitor",
+  "version": "2.1.0",
+  "type": "module",
+  "description": "Context Gauge sidecar for Antigravity 2.0"
+}

@@ -1,0 +1,24 @@
+# Private working folders — never publish
+# Draft screenshots (some show client names)
+docs/screenshots/*_v0*
+scratch/
+dist/
+*.zip
+
+# Chat logs or transcripts accidentally copied in
+*.jsonl
+transcript*
+
+# OS and editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+__pycache__/
+*.pyc
+node_modules/
+
+# Local secrets
+.env
+.env.*
